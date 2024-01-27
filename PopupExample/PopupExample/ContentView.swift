@@ -247,6 +247,8 @@ struct ContentView : View {
                 $0
                     .closeOnTap(false)
                     .backgroundColor(.black.opacity(0.4))
+                    .appearFrom(.center)
+                    .animation(.spring(response: 0.4, dampingFraction: 0.9, blendDuration: 1))
             }
 
             .popup(isPresented: $popups.showingBottomFirst) {

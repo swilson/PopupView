@@ -44,6 +44,8 @@ public struct Popup<PopupContent: View>: ViewModifier {
         self.positionIsCalculatedCallback = positionIsCalculatedCallback
         self.animationCompletedCallback = animationCompletedCallback
         self.dismissCallback = dismissCallback
+        
+        self.scaled = params.appearFrom == .center
     }
     
     public enum PopupType {
@@ -123,6 +125,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
         case bottom
         case left
         case right
+        case center
     }
 
     public struct PopupParameters {
@@ -357,6 +360,9 @@ public struct Popup<PopupContent: View>: ViewModifier {
 
     /// Last position for drag gesture
     @State private var lastDragPosition: CGSize = .zero
+
+    /// Scaling for center animation
+    @State private var scaled: Bool
     
     /// The offset when the popup is displayed
     private var displayedOffsetY: CGFloat {
@@ -427,7 +433,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
         switch calculatedAppearFrom {
         case .top:
             return CGPoint(x: displayedOffsetX, y: -presenterContentRect.minY - safeAreaInsets.top - sheetContentRect.height)
-        case .bottom:
+        case .bottom, .center:
             return CGPoint(x: displayedOffsetX, y: screenHeight)
         case .left:
             return CGPoint(x: -screenWidth, y: displayedOffsetY)
@@ -503,21 +509,42 @@ public struct Popup<PopupContent: View>: ViewModifier {
                     if !shouldShowContent, newValue == hiddenOffset { // don't animate initial positioning outside the screen
                         actualCurrentOffset = newValue
                     } else {
-                        if #available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *) {
+                        if (appearFrom == .center) {
+                            if #available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *) {
+                                actualCurrentOffset = newValue
 #if swift(>=5.9)
-                            withAnimation(animation) {
-                                actualCurrentOffset = newValue
-                            } completion: {
-                                animationCompletedCallback()
-                            }
+                                withAnimation(animation) {
+                                    scaled = false
+                                } completion: {
+                                    animationCompletedCallback()
+                                }
 #else
-                            withAnimation(animation) {
-                                actualCurrentOffset = newValue
-                            }
+                                withAnimation(animation) {
+                                    scaled = false
+                                }
 #endif
+                            } else {
+                                withAnimation(animation) {
+                                    scaled = false
+                                }
+                            }
                         } else {
-                            withAnimation(animation) {
-                                actualCurrentOffset = newValue
+                            if #available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *) {
+#if swift(>=5.9)
+                                withAnimation(animation) {
+                                    actualCurrentOffset = newValue
+                                } completion: {
+                                    animationCompletedCallback()
+                                }
+#else
+                                withAnimation(animation) {
+                                    actualCurrentOffset = newValue
+                                }
+#endif
+                            } else {
+                                withAnimation(animation) {
+                                    actualCurrentOffset = newValue
+                                }
                             }
                         }
                     }
@@ -525,6 +552,8 @@ public struct Popup<PopupContent: View>: ViewModifier {
                 .onChange(of: sheetContentRect.size) { sheetContentRect in
                     positionIsCalculatedCallback()
                 }
+                .scaleEffect(scaled ? 2 : 1)
+                .opacity(scaled ? 0 : 1)
         }
 
 #if !os(tvOS)
@@ -555,7 +584,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
             if dragState.translation.height < 0 {
                 return CGSize(width: 0, height: dragState.translation.height)
             }
-        case .bottom:
+        case .bottom, .center:
             if dragState.translation.height > 0 {
                 return CGSize(width: 0, height: dragState.translation.height)
             }
@@ -584,7 +613,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
             if drag.translation.height < -referenceY {
                 shouldDismiss = true
             }
-        case .bottom:
+        case .bottom, .center:
             if drag.translation.height > 0 {
                 lastDragPosition = CGSize(width: 0, height: drag.translation.height)
             }
