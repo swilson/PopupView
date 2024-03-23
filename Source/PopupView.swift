@@ -372,6 +372,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
             }
             if position.isVerticalCenter {
                 return (screenHeight - sheetContentRect.height)/2 - safeAreaInsets.top
+                - (useKeyboardSafeArea ? keyboardHeightHelper.keyboardHeight / 2 : 0)
             }
             if position.isBottom {
                 return screenHeight - sheetContentRect.height
