@@ -80,7 +80,7 @@ struct PopupsList: View {
                 .ignoresSafeArea()
             
             ScrollView {
-                LazyVStack(spacing: 12) {
+                VStack(spacing: 12) {
                     safeSpaceForMac()
 
                     Group {
@@ -135,7 +135,7 @@ struct PopupsList: View {
 #endif
     }
 
-    @ViewBuilder
+    @MainActor @ViewBuilder
     func floatsSection() -> some View {
 #if os(iOS)
         if UIDevice.current.userInterfaceIdiom == .phone {
@@ -319,7 +319,7 @@ struct PopupsList: View {
         PopupButton(isShowing: $inputSheets.showingFirst, hideAll: hideAll) {
             PopupTypeView(
                 title: "Bottom Input",
-                detail: "Popup in the bottom of the screen with a input text field"
+                detail: "Popup in the bottom of the screen with an input text field"
             ) {
                 InputSheetImage()
             }

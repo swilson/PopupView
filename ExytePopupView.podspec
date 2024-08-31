@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = "ExytePopupView"
-  s.version          = "2.8.4"
+  s.version          = "3.0.6"
   s.summary          = "SwiftUI library for toasts, alerts and popups"
   s.homepage         = 'https://github.com/exyte/PopupView.git'
   s.license          = 'MIT'
@@ -17,9 +17,11 @@ Pod::Spec.new do |s|
   s.swift_version = "5.2"
 
   s.source_files = [
-     'Source/*.h',
-     'Source/*.swift',
-     'Source/**/*.swift'
+     'Sources/*.h',
+     'Sources/*.swift',
+     'Sources/**/*.swift'
   ]
+
+  s.ios.dependency 'SwiftUIIntrospect'
 
 end

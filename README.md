@@ -44,6 +44,33 @@
 [![Carthage Compatible](https://img.shields.io/badge/Carthage-compatible-brightgreen.svg?style=flat)](https://github.com/Carthage/Carthage)
 [![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](https://opensource.org/licenses/MIT)
 
+# What's new in version 3
+- zoom in/out appear/disappear animations
+- `disappearTo` parameter to specify disappearing animation direction - can be different from `appearFrom`
+
+# Update to version 3
+To include new .zoom type, `AppearFrom` enum cases were renamed.
+Instead of:
+```swift
+.popup(isPresented: $floats.showingTopFirst) {
+    FloatTopFirst()
+} customize: {
+    $0
+        .type(.floater())
+        .appearFrom(.top) // <-- here
+}
+```
+use:
+```swift
+.popup(isPresented: $floats.showingTopFirst) {
+    FloatTopFirst()
+} customize: {
+    $0
+        .type(.floater())
+        .appearFrom(.topSlide) // <-- here
+}
+```
+
 # Update to version 2
 
 Instead of:
@@ -78,7 +105,7 @@ To display your popup over all other views including navbars please use:
 ```
 This will also mean that you won't be able to tap "through" the popup's background on any of the controls "behind it" (that's because this method actually uses transparent fullscreenSheet, which won't pass the touches to underlying view). Opaque popup uses screen size to calculate its position.   
 
-Unfortunately, if opaque is false (to allow "through-touches" if you need them), popup - even if forced to be fullscreen, will be displayed under the navbar (if you know how to pass over this restriction, please do let me know in the comments). Please keep in mind that in this case the popup calculates its position using the frame of the view you attach it to, to avoid being under the navbar. So you'll likely want to attach it to the root view of your screen.  
+Unfortunately, if opaque is false (to allow "through-touches" if you need them), popup - even if forced to be fullscreen, will be displayed under the navbar (if you know how to pass over this restriction, please do let me know in the comments). Please keep in mind that in this case the popup calculates its position using the frame of the view you attach it to, to avoid being under the navbar. So you'll likely want to attach it to the root view of your app.  
 
 # Usage
 1. Add a bool to control popup presentation state
@@ -115,13 +142,23 @@ struct ContentView: View {
 ### Available customizations - optional parameters
 use `customize` closure in popup modifier:
 
-`type` - toast, float or default. Floater has parameters of its own:     
-- `verticalPadding`  - padding which will define padding from the relative vertical edge or will be added to safe area if `useSafeAreaInset` is true   
-- `vhorizontalPadding`  - padding which will define padding from the relative horizontal edge or will be added to safe area if `useSafeAreaInset` is true      
+`type`:
+- `default` - usual popup in the center of screen
+- toast - fitted to screen i.e. without padding and ignoring safe area
+- floater - has padding and can choose to use or ignore safe area
+- scroll - adds a scroll to your content, if you scroll to top of this scroll - the gesture will continue into popup's drag dismiss.
+
+floater parameters:     
+- `verticalPadding` - padding which will define padding from the relative vertical edge or will be added to safe area if `useSafeAreaInset` is true   
+- `horizontalPadding` - padding which will define padding from the relative horizontal edge or will be added to safe area if `useSafeAreaInset` is true      
 - `useSafeAreaInset` - whether to include safe area insets in floater padding      
 
+scroll parameters:   
+`headerView` - a view on top which won't be a part of the scroll (if you need one)
+
 `position` - topLeading, top, topTrailing, leading, center, trailing, bottomLeading, bottom, bottomTrailing 
-`appearFrom` - `top, bottom, left, right`: determines the direction of appearing animation. If left empty it copies `position` parameter: so appears from .top edge, if `position` is set to .top
+`appearFrom` - `topSlide, bottomSlide, leftSlide, rightSlide, centerScale`: determines the direction of appearing animation. If left empty it copies `position` parameter: so appears from .top edge, if `position` is set to .top
+`disappearTo` - same as `appearFrom`, but for disappearing animation. If left empty it copies `appearFrom`.
 `animation` - custom animation for popup sliding onto screen  
 `autohideIn` - time after which popup should disappear    
 `dragToDismiss` - true by default: enable/disable drag to dismiss (upwards for .top popup types, downwards for .bottom and default type)    
@@ -188,13 +225,16 @@ github "Exyte/PopupView"
 
 ## Our other open source SwiftUI libraries
 [Grid](https://github.com/exyte/Grid) - The most powerful Grid container    
-[ScalingHeaderScrollView](https://github.com/exyte/ScalingHeaderScrollView) - A scroll view with a sticky header which shrinks as you scroll  
-[AnimatedTabBar](https://github.com/exyte/AnimatedTabBar) - A tabbar with number of preset animations         
+[ScalingHeaderScrollView](https://github.com/exyte/ScalingHeaderScrollView) - A scroll view with a sticky header which shrinks as you scroll    
+[AnimatedTabBar](https://github.com/exyte/AnimatedTabBar) - A tabbar with a number of preset animations   
 [MediaPicker](https://github.com/exyte/mediapicker) - Customizable media picker     
-[Chat](https://github.com/exyte/chat) - Chat UI framework with fully customizable message cells, input view, and a built-in media picker      
+[Chat](https://github.com/exyte/chat) - Chat UI framework with fully customizable message cells, input view, and a built-in media picker  
+[OpenAI](https://github.com/exyte/OpenAI) Wrapper lib for [OpenAI REST API](https://platform.openai.com/docs/api-reference/introduction)    
+[AnimatedGradient](https://github.com/exyte/AnimatedGradient) - Animated linear gradient     
 [ConcentricOnboarding](https://github.com/exyte/ConcentricOnboarding) - Animated onboarding flow    
 [FloatingButton](https://github.com/exyte/FloatingButton) - Floating button menu    
 [ActivityIndicatorView](https://github.com/exyte/ActivityIndicatorView) - A number of animated loading indicators    
 [ProgressIndicatorView](https://github.com/exyte/ProgressIndicatorView) - A number of animated progress indicators    
+[FlagAndCountryCode](https://github.com/exyte/FlagAndCountryCode) - Phone codes and flags for every country    
 [SVGView](https://github.com/exyte/SVGView) - SVG parser    
 [LiquidSwipe](https://github.com/exyte/LiquidSwipe) - Liquid navigation animation    
