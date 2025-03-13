@@ -406,6 +406,7 @@ public struct Popup<PopupContent: View>: ViewModifier {
                 return horizontalPadding + (useSafeAreaInset ? safeAreaInsets.leading : 0)
             }
             if position.isHorizontalCenter {
+                print (screenWidth)
                 return (screenWidth - sheetContentRect.width)/2 - safeAreaInsets.leading
             }
             if position.isTrailing {
@@ -466,7 +467,11 @@ public struct Popup<PopupContent: View>: ViewModifier {
 
     var screenSize: CGSize {
 #if os(iOS)
-        return UIScreen.main.bounds.size
+        if ProcessInfo.processInfo.isiOSAppOnMac {
+            return CGSize(width: presenterContentRect.size.width, height: presenterContentRect.size.height - presenterContentRect.minY)
+        } else {
+            return UIScreen.main.bounds.size
+        }
 #elseif os(watchOS)
         return WKInterfaceDevice.current().screenBounds.size
 #else
