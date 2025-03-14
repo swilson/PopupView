@@ -406,7 +406,6 @@ public struct Popup<PopupContent: View>: ViewModifier {
                 return horizontalPadding + (useSafeAreaInset ? safeAreaInsets.leading : 0)
             }
             if position.isHorizontalCenter {
-                print (screenWidth)
                 return (screenWidth - sheetContentRect.width)/2 - safeAreaInsets.leading
             }
             if position.isTrailing {
